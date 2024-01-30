@@ -36,16 +36,7 @@ public class UserMealWithExcessCollector
     @Override
     public BiConsumer<List<UserMealWithExcess>, UserMeal> accumulator() {
         return (list, userMeal) -> {
-            LocalDate userMealLocalDate = userMeal.getDateTime().toLocalDate();
-
-            totalCaloriesByDateMap.putIfAbsent(userMealLocalDate, 0);
-            totalCaloriesByDateMap.merge(userMealLocalDate, userMeal.getCalories(), Integer::sum);
-
-            AtomicBoolean isExcess = isExcessByDateMap.computeIfAbsent(
-                    userMealLocalDate,
-                    k -> new AtomicBoolean(totalCaloriesByDateMap.get(userMealLocalDate) > caloriesPerDay)
-            );
-            isExcess.set(totalCaloriesByDateMap.get(userMealLocalDate) > caloriesPerDay);
+            MealUtil.fillMapsWithStatistics(caloriesPerDay, userMeal, totalCaloriesByDateMap, isExcessByDateMap);
 
             if (TimeUtil.isBetweenHalfOpen(
                     userMeal.getDateTime().toLocalTime(), startTime, endTime)) {
