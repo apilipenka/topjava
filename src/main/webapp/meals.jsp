@@ -52,16 +52,16 @@
     <c:forEach var="meal" items="${meals}">
         <tr class="${meal.excess ? 'red':'green'}">
             <td class="time">
-                <c:out value="${formatter.format(meal.getDateTime())}"/>
+                    ${formatter.format(meal.getDateTime())}
             </td>
             <td class="description">
-                <c:out value="${meal.description}"/>
+                    ${meal.description}
             </td>
             <td class="calories">
-                <c:out value="${meal.calories}"/>
+                    ${meal.calories}
             </td>
-            <td><a href="meals?action=edit&mealId=<c:out value="${meal.id}"/>">Редактировать</a></td>
-            <td><a href="meals?action=delete&mealId=<c:out value="${meal.id}"/>">Удалить</a></td>
+            <td><a href="meals?action=edit&mealId=${meal.id}">Редактировать</a></td>
+            <td><a href="meals?action=delete&mealId=${meal.id}">Удалить</a></td>
         </tr>
     </c:forEach>
     </tbody>

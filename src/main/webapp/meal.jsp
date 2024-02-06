@@ -16,29 +16,23 @@
 <h2>Meal</h2>
 
 <form method="POST" action='meals' name="frmAddMeal" accept-charset="UTF-8">
-    <label>
-        ID :
-        <input
-                type="text" readonly="readonly" name="mealId"
-                value="<c:out value="${meal.id}" />"/>
-    </label> <br/>
+
+    <input type="hidden" readonly="readonly" name="mealId" value="${meal.id}"/>
+
     <label>
         Date :
-        <input
-                type="text" name="dateTime" placeholder="yyyy-MM-dd HH:mm"
-                value="${formatter.format(meal.getDateTime())}"/>
+        <input type="text" name="dateTime" placeholder="yyyy-MM-dd HH:mm"
+               value="${formatter.format(meal.getDateTime())}"/>
     </label> <br/>
     <label>
         Description :
         <input
-                type="text" name="description"
-                value="<c:out value="${meal.description}" />"/>
+                type="text" name="description" value="${meal.description}"/>
     </label> <br/>
     <label>
         Calories :
         <input
-                type="number" name="calories"
-                value="<c:out value="${meal.calories}" />"/>
+                type="number" name="calories" value="${meal.calories}"/>
     </label> <br/>
     <p>
         <input type="submit" value="Submit"/>
