@@ -1,0 +1,75 @@
+<%@ page import="ru.javawebinar.topjava.model.MealTo" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<html lang="ru">
+<head>
+    <title>Meals</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            width: 700px;
+            padding: 5px;
+        }
+
+        .green {
+            color: green
+        }
+
+        .red {
+            color: red
+        }
+
+        .description {
+            width: 50%;
+        }
+
+        .time {
+            width: 30%;
+        }
+
+        .calories {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<h3><a href="index.html">Home</a></h3>
+<hr>
+<h2>Meals</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th class="time">Время</th>
+        <th class="description">Описание</th>
+        <th>Калории</th>
+    </tr>
+    </thead>
+    <tbody>
+    <c:forEach var="meal" items="${meals}">
+        <tr class="${meal.excess ? 'red':'green'}">
+            <td>
+                <c:out value="${meal.id}"/>
+            </td>
+            <td class="time">
+                <c:out value="${meal.getReadableDateTime()}"/>
+            </td>
+            <td class="description">
+                <c:out value="${meal.description}"/>
+            </td>
+            <td class="calories">
+                <c:out value="${meal.calories}"/>
+            </td>
+            <td><a href="meal?action=edit&mealId=<c:out value="${meal.id}"/>">Редактировать</a></td>
+            <td><a href="meal?action=delete&mealId=<c:out value="${meal.id}"/>">Удалить</a></td>
+        </tr>
+    </c:forEach>
+    </tbody>
+</table>
+<p><a href="meal?action=insert">Добавить</a></p>
+</body>
+</html>
