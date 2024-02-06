@@ -3,20 +3,15 @@ package ru.javawebinar.topjava.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Date;
-
-import static ru.javawebinar.topjava.util.TimeUtil.readableDateTimeFormatter;
 
 public class Meal {
-
     public Integer id;
 
     private LocalDateTime dateTime;
 
     private String description;
 
-    private Integer calories;
+    private int calories;
 
     public Meal(Integer id, LocalDateTime dateTime, String description, int calories) {
         this.id = id;
@@ -33,7 +28,7 @@ public class Meal {
         return description;
     }
 
-    public Integer getCalories() {
+    public int getCalories() {
         return calories;
     }
 
@@ -45,7 +40,7 @@ public class Meal {
         return dateTime.toLocalTime();
     }
 
-    public void setCalories(Integer calories) {
+    public void setCalories(int calories) {
         this.calories = calories;
     }
 
@@ -64,14 +59,4 @@ public class Meal {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    public String getDateTimeInReadableFormat() {
-        return readableDateTimeFormatter.format(dateTime);
-    }
-
-    public Date localDateTimeToDate() {
-        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
-    }
-
-
 }

@@ -43,20 +43,17 @@
 <table>
     <thead>
     <tr>
-        <th>Id</th>
         <th class="time">Время</th>
         <th class="description">Описание</th>
         <th>Калории</th>
     </tr>
     </thead>
     <tbody>
+    <jsp:useBean id="meals" scope="request" type="java.util.List"/>
     <c:forEach var="meal" items="${meals}">
         <tr class="${meal.excess ? 'red':'green'}">
-            <td>
-                <c:out value="${meal.id}"/>
-            </td>
             <td class="time">
-                <c:out value="${meal.getReadableDateTime()}"/>
+                <c:out value="${formatter.format(meal.getDateTime())}"/>
             </td>
             <td class="description">
                 <c:out value="${meal.description}"/>

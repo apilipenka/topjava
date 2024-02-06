@@ -2,58 +2,18 @@ package ru.javawebinar.topjava.util;
 
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.repository.MealMemoryRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
+    //   public static final Repository<Meal, Integer> mealMemoryRepository = new MealMemoryRepository();
 
-    public static final Repository<Meal, Integer> mealMemoryRepository = new MealMemoryRepository();
-
-    public static final int Calorie_Norm = 2000;
-
-    static {
-        mealMemoryRepository.create(
-                new Meal(null,
-                        LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0),
-                        "Завтрак",
-                        500));
-        mealMemoryRepository.create(
-                new Meal(null,
-                        LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0),
-                        "Обед",
-                        1000));
-        mealMemoryRepository.create(
-                new Meal(null,
-                        LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0),
-                        "Ужин",
-                        500));
-        mealMemoryRepository.create(
-                new Meal(null,
-                        LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0),
-                        "Еда на граничное значение",
-                        100));
-        mealMemoryRepository.create(
-                new Meal(null,
-                        LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0),
-                        "Завтрак",
-                        1000));
-        mealMemoryRepository.create(
-                new Meal(null,
-                        LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0),
-                        "Обед",
-                        500));
-        mealMemoryRepository.create(
-                new Meal(null,
-                        LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0),
-                        "Ужин",
-                        410));
-    }
+    public static final int CALORIE_NORM = 2000;
 
     public static List<MealTo> filteredByStreams(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
@@ -69,7 +29,8 @@ public class MealsUtil {
     }
 
     public static void main(String[] args) {
-        List<MealTo> mealsTo = filteredByStreams(mealMemoryRepository.getAll(), LocalTime.of(7, 0), LocalTime.of(12, 0), Calorie_Norm);
+        List<MealTo> mealsTo = filteredByStreams(MealMemoryRepository.getInstance().getAll(), LocalTime.of(7, 0), LocalTime.of(12,
+                0), CALORIE_NORM);
         mealsTo.forEach(System.out::println);
     }
 

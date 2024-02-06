@@ -2,6 +2,7 @@
          pageEncoding="utf-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="ru.javawebinar.topjava.util.TimeUtil" %>
 
 <html lang="ru">
 <head>
@@ -17,26 +18,26 @@
 <form method="POST" action='meal' name="frmAddMeal" accept-charset="UTF-8">
     <label>
         ID :
-        <input type="text" readonly="readonly" name="mealId"
-               value="<c:out value="${meal.id}" />"/>
+        <input
+                type="text" readonly="readonly" name="mealId"
+                value="<c:out value="${meal.id}" />"/>
     </label> <br/>
     <label>
         Date :
         <input
-                type="text" name="dateTime"
-                value="<fmt:formatDate pattern="dd.MM.yyyy HH:mm:ss"
-        value="${meal.localDateTimeToDate()}" />"/>
+                type="text" name="dateTime" placeholder="yyyy-MM-dd HH:mm"
+                value="${formatter.format(meal.getDateTime())}"/>
     </label> <br/>
     <label>
         Description :
         <input
                 type="text" name="description"
-                value="<c:out value=" ${meal.description}" />"/>
+                value="<c:out value="${meal.description}" />"/>
     </label> <br/>
     <label>
         Calories :
         <input
-                type="text" name="calories"
+                type="number" name="calories"
                 value="<c:out value="${meal.calories}" />"/>
     </label> <br/>
     <p>
