@@ -15,7 +15,7 @@
 <hr>
 <h2>Meal</h2>
 
-<form method="POST" action='meal' name="frmAddMeal" accept-charset="UTF-8">
+<form method="POST" action='meals' name="frmAddMeal" accept-charset="UTF-8">
     <label>
         ID :
         <input

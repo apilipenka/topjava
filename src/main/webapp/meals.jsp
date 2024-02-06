@@ -49,7 +49,6 @@
     </tr>
     </thead>
     <tbody>
-    <jsp:useBean id="meals" scope="request" type="java.util.List"/>
     <c:forEach var="meal" items="${meals}">
         <tr class="${meal.excess ? 'red':'green'}">
             <td class="time">
@@ -61,12 +60,12 @@
             <td class="calories">
                 <c:out value="${meal.calories}"/>
             </td>
-            <td><a href="meal?action=edit&mealId=<c:out value="${meal.id}"/>">Редактировать</a></td>
-            <td><a href="meal?action=delete&mealId=<c:out value="${meal.id}"/>">Удалить</a></td>
+            <td><a href="meals?action=edit&mealId=<c:out value="${meal.id}"/>">Редактировать</a></td>
+            <td><a href="meals?action=delete&mealId=<c:out value="${meal.id}"/>">Удалить</a></td>
         </tr>
     </c:forEach>
     </tbody>
 </table>
-<p><a href="meal?action=insert">Добавить</a></p>
+<p><a href="meals?action=insert">Добавить</a></p>
 </body>
 </html>
