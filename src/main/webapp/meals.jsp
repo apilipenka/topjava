@@ -21,8 +21,31 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
-    <a href="meals?action=create">Add Meal</a>
+    <br>
+    <form method="get" action="meals">
+        <input type="hidden" name="action" value="filter">
+        <table>
+            <tbody>
+            <tr>
+                <td>Date From:</td>
+                <td>Date to:</td>
+                <td>Time from:</td>
+                <td>Time to:</td>
+            </tr>
+            <tr>
+                <td><input type="date" value="${sessionScope.filterDateFrom}" name="filterDateFrom"></td>
+                <td><input type="date" value="${sessionScope.filterDateTo}" name="filterDateTo"></td>
+                <td><input type="time" value="${sessionScope.filterTimeFrom}" name="filterTimeFrom"></td>
+                <td><input type="time" value="${sessionScope.filterTimeTo}" name="filterTimeTo"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button type="filter">Filter</button>
+    </form>
     <br><br>
+    <a href="meals?action=create">Add Meal</a>
+    <br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
@@ -34,13 +57,16 @@
         </tr>
         </thead>
         <c:forEach items="${requestScope.meals}" var="meal">
-            <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
             <tr class="${meal.excess ? 'excess' : 'normal'}">
                 <td>
                         <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
                         <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
                         <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
+                                <%--${fn:formatDateTime(meal.dateTime)} --%>
+
                         ${fn:formatDateTime(meal.dateTime)}
+
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
