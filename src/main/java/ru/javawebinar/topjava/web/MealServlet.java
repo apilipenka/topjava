@@ -24,8 +24,7 @@ public class MealServlet extends HttpServlet {
     private MealRestController mealRestController;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init() {
         appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         mealRestController = appCtx.getBean(MealRestController.class);
     }
@@ -45,8 +44,7 @@ public class MealServlet extends HttpServlet {
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")),
-                SecurityUtil.getAuthUserId());
+                Integer.parseInt(request.getParameter("calories")));
 
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
@@ -72,91 +70,17 @@ public class MealServlet extends HttpServlet {
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, SecurityUtil.getAuthUserId()) :
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         mealRestController.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
-            case "filter": {
-
-                String filterDateFromAttribute = request.getParameter("filterDateFrom");
-                LocalDate filterDateFrom;
-                if (filterDateFromAttribute != null && !filterDateFromAttribute.isEmpty() &&
-                        !filterDateFromAttribute.equalsIgnoreCase("null")) {
-                    filterDateFrom = LocalDate.parse(filterDateFromAttribute);
-                    request.getSession().setAttribute("filterDateFrom", filterDateFrom);
-                } else {
-                    request.getSession().removeAttribute("filterDateFrom");
-                }
-
-                String filterDateToAttribute = request.getParameter("filterDateTo");
-                LocalDate filterDateTo;
-                if (filterDateToAttribute != null && !filterDateToAttribute.isEmpty() &&
-                        !filterDateToAttribute.equalsIgnoreCase("null")) {
-                    filterDateTo = LocalDate.parse(filterDateToAttribute);
-                    request.getSession().setAttribute("filterDateTo", filterDateTo);
-                } else {
-                    request.getSession().removeAttribute("filterDateTo");
-                }
-
-                String filterTimeFromAttribute = request.getParameter("filterTimeFrom");
-                LocalTime filterTimeFrom;
-                if (filterTimeFromAttribute != null && !filterTimeFromAttribute.isEmpty() &&
-                        !filterTimeFromAttribute.equalsIgnoreCase("null")) {
-                    filterTimeFrom = LocalTime.parse(filterTimeFromAttribute);
-                    request.getSession().setAttribute("filterTimeFrom", filterTimeFrom);
-                } else {
-                    request.getSession().removeAttribute("filterTimeFrom");
-                }
-
-                String filterTimeToAttribute = request.getParameter("filterTimeTo");
-                LocalTime filterTimeTo;
-                if (filterTimeToAttribute != null && !filterTimeToAttribute.isEmpty() &&
-                        !filterTimeToAttribute.equalsIgnoreCase("null")) {
-                    filterTimeTo = LocalTime.parse(filterTimeToAttribute);
-                    request.getSession().setAttribute("filterTimeTo", filterTimeTo);
-                } else {
-                    request.getSession().removeAttribute("filterTimeTo");
-                }
-
-                response.sendRedirect("meals");
-                break;
-            }
             case "all":
             default:
-                String filterDateFromAttribute = String.valueOf(request.getSession().getAttribute("filterDateFrom"));
-                LocalDate filterDateFrom = null;
-                if (filterDateFromAttribute != null && !filterDateFromAttribute.isEmpty() &&
-                        !filterDateFromAttribute.equalsIgnoreCase("null")) {
-                    filterDateFrom = LocalDate.parse(filterDateFromAttribute);
-
-                }
-
-                String filterDateToAttribute = String.valueOf(request.getSession().getAttribute("filterDateTo"));
-                LocalDate filterDateTo = null;
-                if (filterDateToAttribute != null && !filterDateToAttribute.isEmpty() &&
-                        !filterDateToAttribute.equalsIgnoreCase("null")) {
-                    filterDateTo = LocalDate.parse(filterDateToAttribute);
-
-                }
-
-                String filterTimeFromAttribute = String.valueOf(request.getSession().getAttribute("filterTimeFrom"));
-                LocalTime filterTimeFrom = null;
-                if (filterTimeFromAttribute != null && !filterTimeFromAttribute.isEmpty() &&
-                        !filterTimeFromAttribute.equalsIgnoreCase("null")) {
-                    filterTimeFrom = LocalTime.parse(filterTimeFromAttribute);
-
-                }
-
-                String filterTimeToAttribute = String.valueOf(request.getSession().getAttribute("filterTimeTo"));
-                LocalTime filterTimeTo = null;
-                if (filterTimeToAttribute != null && !filterTimeToAttribute.isEmpty() &&
-                        !filterTimeToAttribute.equalsIgnoreCase("null")) {
-                    filterTimeTo = LocalTime.parse(filterTimeToAttribute);
-
-                }
-
-
+                LocalDate filterDateFrom = getLocalDateFilterParameter(request, "filterDateFrom");
+                LocalDate filterDateTo = getLocalDateFilterParameter(request, "filterDateTo");
+                LocalTime filterTimeFrom = getLocalTimeFilterParameter(request, "filterTimeFrom");
+                LocalTime filterTimeTo = getLocalTimeFilterParameter(request, "filterTimeTo");
                 if (filterDateFrom == null && filterDateTo == null && filterTimeFrom == null && filterTimeTo == null) {
                     log.info("getAll");
                     request.setAttribute("meals",
@@ -175,5 +99,25 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private LocalDate getLocalDateFilterParameter(HttpServletRequest request, String paramName) {
+        String filterDateFromAttribute = request.getParameter(paramName);
+        if (filterDateFromAttribute != null && !filterDateFromAttribute.isEmpty() &&
+                !filterDateFromAttribute.equalsIgnoreCase("null")) {
+            return LocalDate.parse(filterDateFromAttribute);
+        } else {
+            return null;
+        }
+    }
+
+    private LocalTime getLocalTimeFilterParameter(HttpServletRequest request, String paramName) {
+        String filterDateFromParameter = request.getParameter(paramName);
+        if (filterDateFromParameter != null && !filterDateFromParameter.isEmpty() &&
+                !filterDateFromParameter.equalsIgnoreCase("null")) {
+            return LocalTime.parse(filterDateFromParameter);
+        } else {
+            return null;
+        }
     }
 }

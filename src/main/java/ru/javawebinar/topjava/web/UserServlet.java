@@ -20,13 +20,13 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws
             IOException {
-        request.setCharacterEncoding("UTF-8");
+
         String user = request.getParameter("userId");
-        SecurityUtil.setAuthUserId(Integer.parseInt(user));
-        log.debug("redirect to index.html");
-        request.getRequestDispatcher("/index.html").forward(request, response);
+        SecurityUtil.setAuthenticatedUserId(Integer.parseInt(user));
+        log.debug("redirect to meals");
+        response.sendRedirect("meals");
     }
 
 }

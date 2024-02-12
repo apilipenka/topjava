@@ -23,7 +23,7 @@
     <h2>Meals</h2>
     <br>
     <form method="get" action="meals">
-        <input type="hidden" name="action" value="filter">
+        <!--<input type="hidden" name="action" value="filter">-->
         <table>
             <tbody>
             <tr>
@@ -33,10 +33,10 @@
                 <td>Time to:</td>
             </tr>
             <tr>
-                <td><input type="date" value="${sessionScope.filterDateFrom}" name="filterDateFrom"></td>
-                <td><input type="date" value="${sessionScope.filterDateTo}" name="filterDateTo"></td>
-                <td><input type="time" value="${sessionScope.filterTimeFrom}" name="filterTimeFrom"></td>
-                <td><input type="time" value="${sessionScope.filterTimeTo}" name="filterTimeTo"></td>
+                <td><input type="date" value="${filterDateFrom}" name="filterDateFrom"></td>
+                <td><input type="date" value="${filterDateTo}" name="filterDateTo"></td>
+                <td><input type="time" value="${filterTimeFrom}" name="filterTimeFrom"></td>
+                <td><input type="time" value="${filterTimeTo}" name="filterTimeTo"></td>
             </tr>
             </tbody>
         </table>

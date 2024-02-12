@@ -32,11 +32,11 @@ public class MealService {
     }
 
     public List<Meal> getAll(int userId) {
-        return (List<Meal>) repository.getAll(userId);
+        return repository.getAll(userId);
     }
 
     public List<Meal> getAllFilterByDate(int userId, LocalDate startDate, LocalDate endDate) {
-        return (List<Meal>) repository.getAllFilterByDate(userId, startDate, endDate);
+        return repository.getAllFilterByDate(userId, startDate, endDate);
     }
 
     public void update(Meal meal, int userId) {

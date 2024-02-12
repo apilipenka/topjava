@@ -7,10 +7,11 @@ import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -57,25 +58,28 @@ public class InMemoryMealRepository implements MealRepository {
         return null;
     }
 
-    @Override
-    public Collection<Meal> getAll(int userId) {
-        return getAllFilterByDate(userId, null, null);
-
-    }
-
-    @Override
-    public Collection<Meal> getAllFilterByDate(int userId, LocalDate startDate, LocalDate endDate) {
+    private List<Meal> getAllFilterByPredicate(int userId, Predicate<Meal> filter) {
         return repository.values()
                 .stream()
                 .filter(meal -> meal.getUserId() == userId)
-                .filter(meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDateTime(), startDate, endDate))
+                .filter(filter)
                 .sorted((meal1, meal2) -> meal2.getDate().compareTo(meal1.getDate()))
                 .collect(Collectors.toList());
-
     }
 
-    public boolean isBelongToUser(Meal meal, int userID) {
-        return meal != null && meal.getUserId() == userID;
+    @Override
+    public List<Meal> getAll(int userId) {
+        return getAllFilterByPredicate(userId, meal -> true);
+    }
+
+    @Override
+    public List<Meal> getAllFilterByDate(int userId, LocalDate startDate, LocalDate endDate) {
+        return getAllFilterByPredicate(userId,
+                meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate));
+    }
+
+    private boolean isBelongToUser(Meal meal, int userId) {
+        return meal != null && meal.getUserId() == userId;
     }
 }
 
