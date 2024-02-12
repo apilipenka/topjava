@@ -104,7 +104,7 @@ public class MealServlet extends HttpServlet {
     private LocalDate getLocalDateFilterParameter(HttpServletRequest request, String paramName) {
         String filterDateFromAttribute = request.getParameter(paramName);
         if (filterDateFromAttribute != null && !filterDateFromAttribute.isEmpty() &&
-                !filterDateFromAttribute.equalsIgnoreCase("null")) {
+                !filterDateFromAttribute.equals("null")) {
             return LocalDate.parse(filterDateFromAttribute);
         } else {
             return null;
@@ -114,7 +114,7 @@ public class MealServlet extends HttpServlet {
     private LocalTime getLocalTimeFilterParameter(HttpServletRequest request, String paramName) {
         String filterDateFromParameter = request.getParameter(paramName);
         if (filterDateFromParameter != null && !filterDateFromParameter.isEmpty() &&
-                !filterDateFromParameter.equalsIgnoreCase("null")) {
+                !filterDateFromParameter.equals("null")) {
             return LocalTime.parse(filterDateFromParameter);
         } else {
             return null;

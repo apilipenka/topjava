@@ -7,6 +7,7 @@ import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
-    private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
+    private final Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
@@ -25,16 +26,17 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
+        meal.setUserId(userId);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            meal.setUserId(userId);
-            repository.put(meal.getId(), meal);
+            Map<Integer, Meal> meals = repository.computeIfAbsent(userId, (id) -> new ConcurrentHashMap<>());
+            meals.put(meal.getId(), meal);
             return meal;
         }
         // handle case: update, but not present in storage
-        Meal mealFromRepository = repository.get(meal.getId());
+        Meal mealFromRepository = get(meal.getId(), userId);
         if (isBelongToUser(mealFromRepository, userId)) {
-            repository.put(meal.getId(), meal);
+            repository.get(userId).put(meal.getId(), meal);
             return meal;
         }
         return null;
@@ -42,29 +44,22 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        Meal mealFromRepository = repository.get(id);
-        if (isBelongToUser(mealFromRepository, userId)) {
-            return repository.remove(id) != null;
+        for (Map<Integer, Meal> meals : repository.values()) {
+            Meal mealFromRepository = meals.get(id);
+            if (isBelongToUser(mealFromRepository, userId)) {
+                mealFromRepository = meals.remove(id);
+                return mealFromRepository != null;
+            }
         }
         return false;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        Meal mealFromRepository = repository.get(id);
-        if (isBelongToUser(mealFromRepository, userId)) {
-            return mealFromRepository;
-        }
-        return null;
-    }
-
-    private List<Meal> getAllFilterByPredicate(int userId, Predicate<Meal> filter) {
-        return repository.values()
-                .stream()
-                .filter(meal -> meal.getUserId() == userId)
-                .filter(filter)
-                .sorted((meal1, meal2) -> meal2.getDate().compareTo(meal1.getDate()))
-                .collect(Collectors.toList());
+        return repository.values().stream()
+                .map(meals -> meals.get(id))
+                .filter(mealFromRepository -> isBelongToUser(mealFromRepository, userId))
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -80,6 +75,20 @@ public class InMemoryMealRepository implements MealRepository {
 
     private boolean isBelongToUser(Meal meal, int userId) {
         return meal != null && meal.getUserId() == userId;
+    }
+
+
+    private List<Meal> getAllFilterByPredicate(int userId, Predicate<Meal> filter) {
+        Map<Integer, Meal> mealsRepository = repository.get(userId);
+        List<Meal> meals = new ArrayList<>();
+        if (mealsRepository == null || mealsRepository.isEmpty()) {
+            return meals;
+        }
+        return mealsRepository.values()
+                .stream()
+                .filter(filter)
+                .sorted((meal1, meal2) -> meal2.getDateTime().compareTo(meal1.getDateTime()))
+                .collect(Collectors.toList());
     }
 }
 
