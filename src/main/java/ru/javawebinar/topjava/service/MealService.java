@@ -36,7 +36,7 @@ public class MealService {
     }
 
     public List<Meal> getAllFilterByDate(int userId, LocalDate startDate, LocalDate endDate) {
-        return repository.getAllFilterByDate(userId, startDate, endDate);
+        return repository.getAllFilterByDate(userId, startDate, endDate == null ? null : endDate.plusDays(1));
     }
 
     public void update(Meal meal, int userId) {

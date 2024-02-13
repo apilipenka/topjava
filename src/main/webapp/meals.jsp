@@ -39,7 +39,7 @@
             </tr>
             </tbody>
         </table>
-        <button type="filter">Filter</button>
+        <button type="submit">Filter</button>
     </form>
     <br><br>
     <a href="meals?action=create">Add Meal</a>

@@ -38,15 +38,11 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
-
         String id = request.getParameter("id");
-
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
-
-
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
         if (meal.isNew()) {
             mealRestController.create(meal);
@@ -59,7 +55,6 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
@@ -77,10 +72,10 @@ public class MealServlet extends HttpServlet {
                 break;
             case "all":
             default:
-                LocalDate filterDateFrom = getLocalDateFilterParameter(request, "filterDateFrom");
-                LocalDate filterDateTo = getLocalDateFilterParameter(request, "filterDateTo");
-                LocalTime filterTimeFrom = getLocalTimeFilterParameter(request, "filterTimeFrom");
-                LocalTime filterTimeTo = getLocalTimeFilterParameter(request, "filterTimeTo");
+                LocalDate filterDateFrom = getFilterDateParameterValue(request, "filterDateFrom");
+                LocalDate filterDateTo = getFilterDateParameterValue(request, "filterDateTo");
+                LocalTime filterTimeFrom = getFilterTimeParameterValue(request, "filterTimeFrom");
+                LocalTime filterTimeTo = getFilterTimeParameterValue(request, "filterTimeTo");
                 if (filterDateFrom == null && filterDateTo == null && filterTimeFrom == null && filterTimeTo == null) {
                     log.info("getAll");
                     request.setAttribute("meals",
@@ -101,23 +96,22 @@ public class MealServlet extends HttpServlet {
         return Integer.parseInt(paramId);
     }
 
-    private LocalDate getLocalDateFilterParameter(HttpServletRequest request, String paramName) {
-        String filterDateFromAttribute = request.getParameter(paramName);
-        if (filterDateFromAttribute != null && !filterDateFromAttribute.isEmpty() &&
-                !filterDateFromAttribute.equals("null")) {
-            return LocalDate.parse(filterDateFromAttribute);
-        } else {
+    private LocalDate getFilterDateParameterValue(HttpServletRequest request, String paramName) {
+        String filterParameterValue = request.getParameter(paramName);
+        if (filterParameterValue == null || filterParameterValue.isEmpty()) {
             return null;
+        } else {
+            return LocalDate.parse(filterParameterValue);
         }
     }
 
-    private LocalTime getLocalTimeFilterParameter(HttpServletRequest request, String paramName) {
-        String filterDateFromParameter = request.getParameter(paramName);
-        if (filterDateFromParameter != null && !filterDateFromParameter.isEmpty() &&
-                !filterDateFromParameter.equals("null")) {
-            return LocalTime.parse(filterDateFromParameter);
-        } else {
+    private LocalTime getFilterTimeParameterValue(HttpServletRequest request, String paramName) {
+        String filterParameterValue = request.getParameter(paramName);
+        if (filterParameterValue == null || filterParameterValue.isEmpty() ||
+                filterParameterValue.equals("null")) {
             return null;
+        } else {
+            return LocalTime.parse(filterParameterValue);
         }
     }
 }

@@ -1,13 +1,15 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,40 +28,49 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        meal.setUserId(userId);
         if (meal.isNew()) {
-            meal.setId(counter.incrementAndGet());
-            Map<Integer, Meal> meals = repository.computeIfAbsent(userId, (id) -> new ConcurrentHashMap<>());
-            meals.put(meal.getId(), meal);
-            return meal;
+            Map<Integer, Meal> mealMap;
+            synchronized (repository) {
+                mealMap =
+                        repository.computeIfAbsent(userId, (id) -> new ConcurrentHashMap<>());
+            }
+            synchronized (mealMap) {
+                meal.setId(counter.incrementAndGet());
+                mealMap.put(meal.getId(), meal);
+            }
+            repository.put(userId, mealMap);
+        } else {
+            Map<Integer, Meal> mealMap = repository.get(userId);
+            if (CollectionUtils.isEmpty(mealMap)) {
+                return null;
+            }
+            synchronized (mealMap) {
+                Meal mealFromRepository = mealMap.get(meal.getId());
+                if (mealFromRepository == null) {
+                    return null;
+                }
+                mealMap.put(meal.getId(), meal);
+            }
         }
-        // handle case: update, but not present in storage
-        Meal mealFromRepository = get(meal.getId(), userId);
-        if (isBelongToUser(mealFromRepository, userId)) {
-            repository.get(userId).put(meal.getId(), meal);
-            return meal;
-        }
-        return null;
+        return meal;
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        for (Map<Integer, Meal> meals : repository.values()) {
-            Meal mealFromRepository = meals.get(id);
-            if (isBelongToUser(mealFromRepository, userId)) {
-                mealFromRepository = meals.remove(id);
-                return mealFromRepository != null;
-            }
+        Map<Integer, Meal> mealMap = repository.get(userId);
+        if (CollectionUtils.isEmpty(mealMap)) {
+            return false;
         }
-        return false;
+        return mealMap.remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return repository.values().stream()
-                .map(meals -> meals.get(id))
-                .filter(mealFromRepository -> isBelongToUser(mealFromRepository, userId))
-                .findFirst().orElse(null);
+        Map<Integer, Meal> mealMap = repository.get(userId);
+        if (CollectionUtils.isEmpty(mealMap)) {
+            return null;
+        }
+        return mealMap.get(id);
     }
 
     @Override
@@ -73,21 +84,14 @@ public class InMemoryMealRepository implements MealRepository {
                 meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate));
     }
 
-    private boolean isBelongToUser(Meal meal, int userId) {
-        return meal != null && meal.getUserId() == userId;
-    }
-
-
     private List<Meal> getAllFilterByPredicate(int userId, Predicate<Meal> filter) {
-        Map<Integer, Meal> mealsRepository = repository.get(userId);
-        List<Meal> meals = new ArrayList<>();
-        if (mealsRepository == null || mealsRepository.isEmpty()) {
-            return meals;
+        Map<Integer, Meal> mealMap = repository.get(userId);
+        if (CollectionUtils.isEmpty(mealMap)) {
+            return Collections.emptyList();
         }
-        return mealsRepository.values()
-                .stream()
+        return mealMap.values().stream()
                 .filter(filter)
-                .sorted((meal1, meal2) -> meal2.getDateTime().compareTo(meal1.getDateTime()))
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }
 }
