@@ -29,28 +29,15 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
-            Map<Integer, Meal> mealMap;
-            synchronized (repository) {
-                mealMap =
-                        repository.computeIfAbsent(userId, (id) -> new ConcurrentHashMap<>());
-            }
-            synchronized (mealMap) {
-                meal.setId(counter.incrementAndGet());
-                mealMap.put(meal.getId(), meal);
-            }
-            repository.put(userId, mealMap);
+            Map<Integer, Meal> mealMap = repository.computeIfAbsent(userId, (id) -> new ConcurrentHashMap<>());
+            meal.setId(counter.incrementAndGet());
+            mealMap.put(meal.getId(), meal);
         } else {
             Map<Integer, Meal> mealMap = repository.get(userId);
             if (CollectionUtils.isEmpty(mealMap)) {
                 return null;
             }
-            synchronized (mealMap) {
-                Meal mealFromRepository = mealMap.get(meal.getId());
-                if (mealFromRepository == null) {
-                    return null;
-                }
-                mealMap.put(meal.getId(), meal);
-            }
+            return mealMap.computeIfPresent(userId, (id, oldMeal) -> meal);
         }
         return meal;
     }
@@ -58,19 +45,13 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public boolean delete(int id, int userId) {
         Map<Integer, Meal> mealMap = repository.get(userId);
-        if (CollectionUtils.isEmpty(mealMap)) {
-            return false;
-        }
-        return mealMap.remove(id) != null;
+        return !CollectionUtils.isEmpty(mealMap) && mealMap.remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
         Map<Integer, Meal> mealMap = repository.get(userId);
-        if (CollectionUtils.isEmpty(mealMap)) {
-            return null;
-        }
-        return mealMap.get(id);
+        return CollectionUtils.isEmpty(mealMap) ? null : mealMap.remove(id);
     }
 
     @Override
