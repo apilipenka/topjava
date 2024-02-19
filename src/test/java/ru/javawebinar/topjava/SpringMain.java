@@ -2,7 +2,6 @@ package ru.javawebinar.topjava;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.env.ConfigurableEnvironment;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.MealTo;
@@ -18,18 +17,8 @@ import java.util.List;
 public class SpringMain {
     public static void main(String[] args) {
         // java 7 automatic resource management (ARM)
-
-        System.setProperty("spring.profiles.active", "memory");
-
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml",
-                "spring/spring-db.xml")) {
-
-            ConfigurableEnvironment env = appCtx.getEnvironment();
-
-            env.setActiveProfiles("jdbc");
-
-            appCtx.setEnvironment(env);
-
+        try (ConfigurableApplicationContext appCtx =
+                     new ClassPathXmlApplicationContext("spring/spring-app-inmemory.xml")) {
 
             Arrays.stream(appCtx.getBeanDefinitionNames()).sorted().forEach(System.out::println);
 
@@ -42,6 +31,7 @@ public class SpringMain {
             System.out.println();
 
             MealRestController mealController = appCtx.getBean(MealRestController.class);
+
             List<MealTo> filteredMealsWithExcess =
                     mealController.getBetween(
                             LocalDate.of(2020, Month.JANUARY, 30), LocalTime.of(7, 0),

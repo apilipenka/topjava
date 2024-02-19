@@ -29,7 +29,7 @@ CREATE INDEX user_role_user_id_idx ON user_role (user_id);
 CREATE TABLE meals
 (
     id          INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
-    date_time   TIMESTAMP           DEFAULT now() NOT NULL,
+    date_time TIMESTAMP NOT NULL,
     description VARCHAR                           NOT NULL,
     calories    integer                           NOT NULL,
     user_id     INTEGER                           NOT NULL,
@@ -37,4 +37,4 @@ CREATE TABLE meals
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE INDEX meals_user_id_idx ON meals (user_id);
-CREATE INDEX meals_user_id_idx ON meals (id, user_id);
+CREATE INDEX meals_id_user_id_idx ON meals (id, user_id);

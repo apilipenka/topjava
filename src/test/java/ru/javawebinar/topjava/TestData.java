@@ -26,28 +26,19 @@ public class TestData {
     public static final User admin = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", Role.ADMIN);
     public static final User guest = new User(GUEST_ID, "Guest", "guest@gmail.com", "guest");
     public static final Meal adminLunch =
-            new Meal(ADMIN_LUNCH_ID, LocalDateTime.of(2015, Month.JUNE, 1, 14, 0),
-                    "Админ ланч", 510);
+            new Meal(ADMIN_LUNCH_ID, LocalDateTime.of(2015, Month.JUNE, 1, 14, 0), "Админ ланч", 510);
     public static final Meal adminDinner =
-            new Meal(ADMIN_DINNER_ID, LocalDateTime.of(2015, Month.JUNE, 1, 20, 0),
-                    "Админ ужин", 610);
+            new Meal(ADMIN_DINNER_ID, LocalDateTime.of(2015, Month.JUNE, 1, 20, 0), "Админ ужин", 610);
     public static final Meal userBreakfast =
-            new Meal(USER_BREAKFAST_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0),
-                    "Пользователь Завтрак", 1456);
+            new Meal(USER_BREAKFAST_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Пользователь Завтрак", 500);
     public static final Meal userLunch =
-            new Meal(USER_LUNCH_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0),
-                    "Пользователь Обед", 1234);
+            new Meal(USER_LUNCH_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Пользователь Обед", 1000);
     public static final Meal userDinner =
-            new Meal(USER_DINNER_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0),
-                    "Пользователь Ужин", 321);
-
+            new Meal(USER_DINNER_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Пользователь Ужин", 410);
     public static final Meal userSecondBreakfast =
-            new Meal(USER_SECOND_BREAKFAST_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 11, 33),
-                    "Пользователь Завтрак", 453);
+            new Meal(USER_SECOND_BREAKFAST_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 11, 33), "Пользователь Завтрак", 510);
     public static final Meal userSecondLunch =
-            new Meal(USER_SECOND_LUNCH_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 12, 45),
-                    "Пользователь Обед", 1500);
+            new Meal(USER_SECOND_LUNCH_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 12, 45), "Пользователь Обед", 1500);
     public static final Meal userSecondDinner =
-            new Meal(USER_SECOND_DINNER_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 21, 15),
-                    "Пользователь Ужин", 200);
+            new Meal(USER_SECOND_DINNER_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 21, 15), "Пользователь Ужин", 200);
 }

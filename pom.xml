@@ -138,10 +138,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <profiles>
-    </profiles>
-
     <dependencyManagement>
     </dependencyManagement>
 </project>

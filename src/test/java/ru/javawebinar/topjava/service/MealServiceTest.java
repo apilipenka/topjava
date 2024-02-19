@@ -1,11 +1,11 @@
 package ru.javawebinar.topjava.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -18,13 +18,12 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.TestData.*;
 
-@ActiveProfiles(value = "jdbc")
+
 @ContextConfiguration({
-        "classpath:spring/spring-app.xml",
-        "classpath:spring/spring-db.xml"
+        "classpath:spring/spring-app-jdbc.xml"
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
@@ -49,7 +48,7 @@ public class MealServiceTest {
     }
 
     @Test
-    public void getNotFoundForWrongUser() {
+    public void getNotFoundForBelongOtherPeople() {
         assertThrows(NotFoundException.class, () -> service.get(USER_LUNCH_ID, ADMIN_ID));
     }
 
@@ -62,8 +61,7 @@ public class MealServiceTest {
     @Test
     public void getAllWrongUser() {
         List<Meal> all = service.getAll(123);
-        assertNotEquals(null, all);
-        assertTrue(all.isEmpty());
+        Assertions.assertThat(all).isEmpty();
     }
 
     @Test
@@ -74,7 +72,7 @@ public class MealServiceTest {
     }
 
     @Test
-    public void updateNotFoundForWrongUser() {
+    public void updateNotFoundForBelongOtherPeople() {
         Meal updated = MealTestUtils.getUpdated(adminLunch);
         assertThrows(NotFoundException.class, () -> service.update(updated, USER_ID));
     }
@@ -124,10 +122,9 @@ public class MealServiceTest {
     }
 
     @Test
-    public void getBetweenInclusiveWrongUser() {
+    public void getBetweenInclusiveBelongOtherPeople() {
         List<Meal> meals = service.getBetweenInclusive(null, null, 123);
-        assertNotEquals(null, meals);
-        assertTrue(meals.isEmpty());
+        Assertions.assertThat(meals).isEmpty();
     }
 
     @Test
@@ -137,7 +134,7 @@ public class MealServiceTest {
     }
 
     @Test
-    public void deleteForWrongUser() {
+    public void deleteNotFoundForBelongOtherPeople() {
         assertThrows(NotFoundException.class, () -> service.delete(ADMIN_LUNCH_ID, USER_ID));
     }
 }
