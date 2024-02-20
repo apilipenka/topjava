@@ -65,6 +65,12 @@ public class MealServiceTest {
     }
 
     @Test
+    public void getAllForUserWithoutMeal() {
+        List<Meal> all = service.getAll(GUEST_ID);
+        Assertions.assertThat(all).isEmpty();
+    }
+
+    @Test
     public void update() {
         Meal updated = MealTestUtils.getUpdated(adminLunch);
         service.update(updated, ADMIN_ID);
@@ -124,6 +130,12 @@ public class MealServiceTest {
     @Test
     public void getBetweenInclusiveBelongOtherPeople() {
         List<Meal> meals = service.getBetweenInclusive(null, null, 123);
+        Assertions.assertThat(meals).isEmpty();
+    }
+
+    @Test
+    public void getBetweenInclusiveForUserWithoutMeal() {
+        List<Meal> meals = service.getBetweenInclusive(null, null, GUEST_ID);
         Assertions.assertThat(meals).isEmpty();
     }
 
