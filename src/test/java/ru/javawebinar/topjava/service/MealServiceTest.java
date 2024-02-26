@@ -12,14 +12,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.TimeOfTheTestRule;
+import ru.javawebinar.topjava.TestTimeRule;
+import ru.javawebinar.topjava.TestsTimesContainer;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -33,20 +32,24 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-    private static final Logger LOG = LoggerFactory.getLogger(MealServiceTest.class);
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
-    private static final Map<String, Long> testsTimes = new HashMap<>();
+    private static final TestsTimesContainer testsTimes = new TestsTimesContainer();
 
     @Autowired
     private MealService service;
 
     @Rule
-    public TimeOfTheTestRule testMethodNameLogger = new TimeOfTheTestRule(testsTimes);
+    public TestTimeRule testMethodNameLogger = new TestTimeRule(testsTimes);
 
     @AfterClass
     public static void afterClass() {
-        testsTimes.keySet().forEach(key -> LOG.info(String.format("The %s test ran for %s ns", key,
-                testsTimes.get(key))));
+        StringBuilder testsTimesStrings = new StringBuilder();
+        testsTimes.getTestsTimes().forEach((key, value) -> testsTimesStrings.append(String.format(" \n%-" + testsTimes.getMaxTestNameLength() + "s - %s " +
+                        "ns",
+                key,
+                value)));
+        log.info(String.valueOf(testsTimesStrings));
     }
 
     @Test
@@ -82,7 +85,7 @@ public class MealServiceTest {
     }
 
     @Test
-    public void get() {
+    public void get() throws InterruptedException {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
         MEAL_MATCHER.assertMatch(actual, adminMeal1);
     }
