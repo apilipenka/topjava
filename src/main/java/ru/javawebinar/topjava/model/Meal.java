@@ -13,7 +13,6 @@ import java.time.LocalTime;
 @NamedQueries({
         @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:userId"),
         @NamedQuery(name = Meal.GET_ALL_SORTED, query = "SELECT m FROM Meal m WHERE m.user.id=:userId ORDER BY dateTime desc"),
-        @NamedQuery(name = Meal.GET, query = "SELECT m FROM Meal m WHERE m.id=:id AND m.user.id=:userId"),
         @NamedQuery(name = Meal.GET_BETWEEN_SORTED,
                 query = "SELECT m FROM Meal m " +
                         "WHERE m.user.id=:userId AND m.dateTime>=:start AND m.dateTime<:end ORDER BY dateTime DESC"),
@@ -26,7 +25,6 @@ import java.time.LocalTime;
 public class Meal extends AbstractBaseEntity {
 
     public static final String DELETE = "Meal.delete";
-    public static final String GET = "Meal.get";
     public static final String GET_ALL_SORTED = "Meal.getAllSorted";
     public static final String GET_BETWEEN_SORTED = "Meal.getBetweenSorted";
     public static final String UPDATE = "Meal.update";
@@ -36,7 +34,6 @@ public class Meal extends AbstractBaseEntity {
     private LocalDateTime dateTime;
 
     @Column(name = "description", nullable = false)
-    @NotNull
     @NotBlank
     @Length(min = 2, max = 20)
     private String description;

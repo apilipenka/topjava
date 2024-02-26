@@ -3,6 +3,8 @@ package ru.javawebinar.topjava.service;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +14,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.TestTimeRule;
 import ru.javawebinar.topjava.TestsTimesContainer;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -40,16 +42,24 @@ public class MealServiceTest {
     private MealService service;
 
     @Rule
-    public TestTimeRule testMethodNameLogger = new TestTimeRule(testsTimes);
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            log.info(String.format("\n%s - %s ms", description.getMethodName(), runtime(TimeUnit.MILLISECONDS)));
+            if (description.getMethodName().length() > testsTimes.getMaxTestNameLength()) {
+                testsTimes.setMaxTestNameLength(description.getMethodName().length());
+            }
+            testsTimes.add(description.getMethodName(), runtime(TimeUnit.MILLISECONDS));
+        }
+    };
 
     @AfterClass
     public static void afterClass() {
         StringBuilder testsTimesStrings = new StringBuilder();
-        testsTimes.getTestsTimes().forEach((key, value) -> testsTimesStrings.append(String.format(" \n%-" + testsTimes.getMaxTestNameLength() + "s - %s " +
-                        "ns",
-                key,
-                value)));
-        log.info(String.valueOf(testsTimesStrings));
+        testsTimes.getTestsTimes().forEach((key, value) ->
+                testsTimesStrings.append(String.format(" \n%-" + testsTimes.getMaxTestNameLength() + "s - %s ms", key
+                        , value)));
+        log.info(testsTimesStrings.toString());
     }
 
     @Test
@@ -85,7 +95,7 @@ public class MealServiceTest {
     }
 
     @Test
-    public void get() throws InterruptedException {
+    public void get() {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
         MEAL_MATCHER.assertMatch(actual, adminMeal1);
     }
