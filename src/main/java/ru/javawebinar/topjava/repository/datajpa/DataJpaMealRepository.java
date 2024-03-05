@@ -4,21 +4,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.MealRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository
-public class DataJpaMealRepository implements MealRepository {
+@Repository("DataJpaMealRepository")
+public class DataJpaMealRepository implements DataJpaMealRepositoryInt {
 
     private final CrudMealRepository crudMealRepository;
     private final CrudUserRepository crudUserRepository;
-    @PersistenceContext
-    private EntityManager entityManager;
 
     public DataJpaMealRepository(CrudMealRepository crudRepository, CrudUserRepository crudUserRepository) {
         this.crudMealRepository = crudRepository;
@@ -53,13 +47,7 @@ public class DataJpaMealRepository implements MealRepository {
     }
 
     public Meal getWithUser(int id, int userId) {
-
-        Query q = this.entityManager.createQuery("SELECT m FROM Meal m JOIN FETCH m.user u WHERE m.id = :id " +
-                "and u.id=:userId order by m.dateTime desc ");
-        q.setParameter("id", id);
-        q.setParameter("userId", userId);
-        Meal meal = (Meal) q.getResultList().stream().findFirst().orElse(null);
-        return meal;
+        return crudMealRepository.getWithUser(id, userId);
     }
 
     @Override
