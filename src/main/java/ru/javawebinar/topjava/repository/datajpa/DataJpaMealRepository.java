@@ -28,17 +28,17 @@ public class DataJpaMealRepository implements MealRepository {
     @Override
     @Transactional
     public Meal save(Meal meal, int userId) {
+        User user;
         if (!meal.isNew()) {
-            Meal mealFromDb;
-            mealFromDb = get(meal.getId(), userId);
+            Meal mealFromDb = get(meal.getId(), userId);
             if (mealFromDb == null) {
                 return null;
             }
-            meal.setUser(mealFromDb.getUser());
+            user = mealFromDb.getUser();
         } else {
-            User user = crudUserRepository.getReferenceById(userId);
-            meal.setUser(user);
+            user = crudUserRepository.getReferenceById(userId);
         }
+        meal.setUser(user);
         return crudMealRepository.save(meal);
     }
 
@@ -49,15 +49,17 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        try {
-            Query q = this.entityManager.createQuery("SELECT m FROM Meal m JOIN FETCH m.user u WHERE m.id = :id " +
-                    "and u.id=:userId order by m.dateTime desc ");
-            q.setParameter("id", id);
-            q.setParameter("userId", userId);
-            return (Meal) q.getSingleResult();
-        } catch (javax.persistence.NoResultException e) {
-            return null;
-        }
+        return crudMealRepository.getByIdAndUserId(id, userId);
+    }
+
+    public Meal getWithUser(int id, int userId) {
+
+        Query q = this.entityManager.createQuery("SELECT m FROM Meal m JOIN FETCH m.user u WHERE m.id = :id " +
+                "and u.id=:userId order by m.dateTime desc ");
+        q.setParameter("id", id);
+        q.setParameter("userId", userId);
+        Meal meal = (Meal) q.getResultList().stream().findFirst().orElse(null);
+        return meal;
     }
 
     @Override

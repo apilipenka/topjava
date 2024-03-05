@@ -57,6 +57,12 @@ public abstract class MealServiceTest extends ServiceTest {
     }
 
     @Test
+    public void get() {
+        Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
+        MEAL_MATCHER.assertMatch(actual, adminMeal1);
+    }
+
+    @Test
     public void getNotFound() {
         assertThrows(NotFoundException.class, () -> service.get(MealTestData.NOT_FOUND, USER_ID));
     }

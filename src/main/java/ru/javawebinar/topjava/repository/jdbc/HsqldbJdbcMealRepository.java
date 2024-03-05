@@ -21,6 +21,11 @@ public class HsqldbJdbcMealRepository extends JdbcMealRepository {
     }
 
     @Override
+    public Object getDateTime(LocalDateTime dateTime) {
+        return Timestamp.valueOf(dateTime);
+    }
+
+    @Override
     public MapSqlParameterSource getMapSqlParameterSource(Meal meal, int userId) {
         return new MapSqlParameterSource()
                 .addValue("id", meal.getId())
@@ -30,10 +35,5 @@ public class HsqldbJdbcMealRepository extends JdbcMealRepository {
                 .addValue("user_id", userId);
     }
 
-    @Override
-    public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        return jdbcTemplate.query(
-                "SELECT * FROM meal WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
-                ROW_MAPPER, userId, Timestamp.valueOf(startDateTime), Timestamp.valueOf(endDateTime));
-    }
+
 }

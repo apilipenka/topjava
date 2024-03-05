@@ -36,14 +36,14 @@ public class DataJpaUserRepository implements UserRepository {
 
     @Override
     public User get(int id) {
-        try {
-            Query q = this.entityManager.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.meals m WHERE u.id = :id " +
+        return crudRepository.findById(id).orElse(null);
+    }
+
+    public User getWithMeal(int id) {
+        Query q = this.entityManager.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.meals m WHERE u.id = :id " +
                     "order by m.dateTime desc ");
             q.setParameter("id", id);
-            return (User) q.getSingleResult();
-        } catch (javax.persistence.NoResultException e) {
-            return null;
-        }
+        return (User) q.getResultList().stream().findFirst().orElse(null);
     }
 
     @Override
