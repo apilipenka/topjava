@@ -7,7 +7,7 @@ import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.service.DataJpaUserServiceInt;
+import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.service.UserServiceTest;
 
 import static ru.javawebinar.topjava.MealTestData.MEAL_MATCHER;
@@ -18,7 +18,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_MATCHER;
 public class DataJpaUserServiceTest extends UserServiceTest {
 
     @Autowired
-    DataJpaUserServiceInt service;
+    UserService service;
     @Test
     public void getWithMeal() {
         User user = service.getWithMeal(USER_ID);

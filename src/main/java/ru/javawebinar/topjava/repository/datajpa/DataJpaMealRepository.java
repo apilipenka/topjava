@@ -4,12 +4,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository("DataJpaMealRepository")
-public class DataJpaMealRepository implements DataJpaMealRepositoryInt {
+@Repository
+public class DataJpaMealRepository implements MealRepository {
 
     private final CrudMealRepository crudMealRepository;
     private final CrudUserRepository crudUserRepository;
@@ -46,6 +47,7 @@ public class DataJpaMealRepository implements DataJpaMealRepositoryInt {
         return crudMealRepository.getByIdAndUserId(id, userId);
     }
 
+    @Override
     public Meal getWithUser(int id, int userId) {
         return crudMealRepository.getWithUser(id, userId);
     }

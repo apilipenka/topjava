@@ -4,18 +4,16 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.datajpa.DataJpaMealRepositoryInt;
+import ru.javawebinar.topjava.repository.MealRepository;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 @Profile(Profiles.DATAJPA)
-public class DataJpaMealService extends MealService implements DataJpaMealServiceInt {
-    private final DataJpaMealRepositoryInt repository;
+public class DataJpaMealService extends MealService {
 
-    public DataJpaMealService(DataJpaMealRepositoryInt repository) {
+    public DataJpaMealService(MealRepository repository) {
         super(repository);
-        this.repository = repository;
     }
 
     @Override

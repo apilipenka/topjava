@@ -19,7 +19,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 public abstract class MealServiceTest extends ServiceTest {
 
     @Autowired
-    public MealServiceInt service;
+    public MealService service;
 
     public MealServiceTest() {
     }
@@ -102,5 +102,10 @@ public abstract class MealServiceTest extends ServiceTest {
     @Test
     public void getBetweenWithNullDates() {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), meals);
+    }
+
+    @Test
+    public void getWithUser() {
+        assertThrows(UnsupportedOperationException.class, () -> service.getWithUser(ADMIN_MEAL_ID, ADMIN_ID));
     }
 }

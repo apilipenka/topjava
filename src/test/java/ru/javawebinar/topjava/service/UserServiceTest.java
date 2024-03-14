@@ -18,7 +18,7 @@ import static ru.javawebinar.topjava.UserTestData.*;
 public abstract class UserServiceTest extends ServiceTest {
 
     @Autowired
-    protected UserServiceInt service;
+    protected UserService service;
 
     @Autowired
     private CacheManager cacheManager;
@@ -83,5 +83,10 @@ public abstract class UserServiceTest extends ServiceTest {
     public void getAll() {
         List<User> all = service.getAll();
         USER_MATCHER.assertMatch(all, admin, guest, user);
+    }
+
+    @Test
+    public void getWithMeal() {
+        assertThrows(UnsupportedOperationException.class, () -> service.getWithMeal(USER_ID));
     }
 }
